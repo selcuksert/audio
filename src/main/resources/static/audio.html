@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset='utf-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <title>Audio Tag Test Page</title>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+    <link rel="stylesheet" href="./styles/semantic.min.css" />
+    <script src="./scripts/jquery.min.js"></script>
+    <script src="./scripts/semantic.min.js"></script>
+    <script src="./scripts/platform.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            var audio = new Audio();
+
+            audio.addEventListener('loadeddata', function () {
+                let state = "";
+                switch (audio.readyState) {
+                    case 0:
+                        state = "HAVE_NOTHING | No information is available about the media resource.";
+                        break;
+                    case 1:
+                        state = "HAVE_METADATA | Enough of the media resource has been retrieved that the metadata attributes are initialized. Seeking will no longer raise an exception.";
+                        break;
+                    case 2:
+                        state = "HAVE_CURRENT_DATA | Data is available for the current playback position, but not enough to actually play more than one frame.";
+                        break;
+                    case 3:
+                        state = "HAVE_FUTURE_DATA | Data for the current playback position as well as for at least a little bit of time into the future is available (in other words, at least two frames of video, for example).";
+                        break;
+                    case 4:
+                        state = "HAVE_ENOUGH_DATA | Enough data is available—and the download rate is high enough—that the media can be played through to the end without interruption.";
+                        break;
+                    default:
+                        state = audio.readyState;
+                        break;
+                }
+                console.log("Data load status:\n", state);
+            });
+
+            audio.addEventListener('canplay', function () {
+                console.log("["+getTime()+"]: Can play audio");
+            });
+
+            audio.addEventListener('canplaythrough', function () {
+                console.log("["+getTime()+"]: Can play through entire audio");
+            });
+
+            $('#playbtn').click(function () {
+                if (audio) {
+                    let audioSrc = $('#streamurl').val();
+                    if (audioSrc) {
+                        console.log('playing');
+                        audio.src = audioSrc;
+                        audio.play();
+                    }
+                }
+            });
+
+            $('#pausebtn').click(function () {
+                if (audio) {
+                    console.log('paused');
+                    audio.pause();
+                }
+            });
+
+            $('#browserinfo').html(platform.name +
+                " v" + platform.version +
+                " | " + platform.os);
+        });
+
+        function getTime() {
+            return new Date().toTimeString();
+        }
+    </script>
+</head>
+
+<body>
+    <div class="ui raised very padded text container segment">
+        <h3 class="ui top attached block header">
+            Audio Test
+        </h3>
+        <div class="ui attached segment">
+            <p>Audio streaming behavior test on <span id="browserinfo" style="font-weight: bold;"></span></p>
+            <div class="ui labeled input">
+                <div class="ui label">
+                    Audio stream URL
+                </div>
+                <input type="text" placeholder="mysite.com" id="streamurl">
+            </div>
+            <div class="ui icon buttons">
+                <button class="ui button" id="playbtn">
+                    <i class="play icon"></i>
+                </button>
+                <button class="ui button" id="pausebtn">
+                    <i class="pause icon"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
